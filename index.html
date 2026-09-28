@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Pickle House - Membership Value Calculator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Cinzel for headers, Noto Sans TC) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script nonce="tph-calc-inline">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tph: {
+                            red: '#7a1f28',      // Burgundy from the image
+                            gold: '#b5965f',     // Muted gold from the image
+                            black: '#111111',    // Rich black
+                            bg: '#fafafa',       // Light off-white background
+                            card: '#ffffff',     // Pure white for cards
+                            text: '#333333',     // Primary dark text
+                            muted: '#6b7280',    // Secondary gray text
+                            border: '#e5e7eb'    // Light border color
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-slider {
+            background: #e5e7eb;
+        }
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #7a1f28;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.2s ease-in-out;
+        }
+        .custom-slider::-webkit-slider-thumb:hover {
+            background: #b5965f;
+            transform: scale(1.15);
+        }
+    </style>
+</head>
+<body class="bg-tph-bg text-tph-text font-sans min-h-screen selection:bg-tph-gold selection:text-white relative pb-36 md:pb-8">
+
+    <!-- Header Section -->
+    <header class="border-b border-tph-border py-6 bg-white/95 backdrop-blur sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <!-- TPH Brand Logo from IG -->
+                <img src="https://scontent.cdninstagram.com/v/t51.82787-19/588017893_17851151166595671_7510770337524067170_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=111&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy43NTMuQzMifQ%3D%3D&_nc_ohc=CsSRf74uekcQ7kNvwFYRk9P&_nc_oc=AdoAqnKWz9EH7ABbYYiNEhHrxS-V3nrwbST4VmBzkyXFN2YpzN6Bc5ZzUEf7tMammrc&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_gid=YHp56vVBtF8vii0Erv9cvg&_nc_ss=7b6a8&oh=00_Af5OL4giYRH0BJ5wh64l7gkGXqCVk9Ee-bSTEtrtIwc9Rw&oe=6A20F97A" 
+                     alt="The Pickle House" class="w-16 h-16 rounded-full border border-tph-border object-cover shadow-sm">
+                <div>
+                    <h1 class="font-serif font-bold text-2xl tracking-widest text-tph-red">THE PICKLE HOUSE</h1>
+                    <p class="text-xs tracking-widest text-tph-muted uppercase mt-1">Private Club • Cost Calculator</p>
+                </div>
+            </div>
+            
+            <!-- Quick Presets -->
+            <div class="flex flex-wrap gap-2 justify-center">
+                <button onclick="applyPreset(2, 1, 1, 3, 0, 0, 0, 0)" class="text-xs bg-white text-tph-text hover:bg-gray-50 border border-tph-border px-3 py-2 rounded-full transition duration-300 shadow-sm">
+                    🧪 (每月2次/4人局)
+                </button>
+                <button onclick="applyPreset(4, 1, 1, 3, 0, 0, 0, 0)" class="text-xs bg-tph-gold text-white font-semibold hover:opacity-90 px-4 py-2 rounded-full transition duration-300 shadow-sm">
+                    🏆 (每月4次/4人局)
+                </button>
+                <button onclick="applyPreset(2, 2, 2, 7, 0, 0, 0, 0)" class="text-xs bg-white text-tph-text hover:bg-gray-50 border border-tph-border px-3 py-2 rounded-full transition duration-300 shadow-sm">
+                    🔥 (每月2次/8人局)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-10">
+        
+        <!-- Intro & Hook -->
+        <section class="text-center max-w-3xl mx-auto mb-10">
+            <h2 class="font-serif text-3xl md:text-4xl font-semibold mb-4 tracking-wide text-tph-red">會籍價值極大化計算機</h2>
+            <p class="text-tph-muted text-sm md:text-base leading-relaxed">
+                別讓舊場地的「預繳積分」困住你的進步。TPH 的會籍制，為你提供真正的自由與高質社群。利用下方計算機，實時對比不同會籍的真實打球與消費成本。
+            </p>
+        </section>
+
+        <!-- INPUT PANEL -->
+        <section id="calculator-inputs" class="bg-tph-card border border-tph-border p-4 md:p-8 rounded-3xl shadow-sm w-full mb-10">
+            <h3 class="font-serif text-base md:text-lg font-bold text-tph-red mb-6 pb-2 border-b border-tph-border flex justify-between items-center">
+                <span><i class="fa-solid fa-sliders mr-2"></i> 輸入你的打球習慣 (支援雙場景組合)</span>
+            </h3>
+            
+            <!-- SCENARIO 1 -->
+            <div class="mb-8">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="w-2 h-2 rounded-full bg-tph-red"></span>
+                    <h4 class="font-serif text-[11px] md:text-sm font-bold tracking-wider text-tph-text uppercase">打球場景一 (Scenario 1)</h4>
+                </div>
+                <div class="grid grid-cols-4 gap-2 md:gap-6">
+                    <!-- Input 1-1: Frequency -->
+                    <div class="bg-tph-bg p-2.5 md:p-5 rounded-2xl border border-tph-border shadow-sm flex flex-col justify-between">
+                        <div class="h-14 md:h-12 flex flex-col justify-center">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                <label for="input-bookings-1" class="font-medium text-[9px] md:text-sm text-tph-muted">每月打波次數</label>
+                                <span id="display-bookings-1" class="font-serif font-bold text-xs md:text-lg text-tph-red">2 次</span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <input type="range" id="input-bookings-1" min="0" max="15" value="2" oninput="calculateCost()" class="w-full h-1.5 rounded-lg appearance-none cursor-pointer custom-slider">
+                            <div class="flex justify-between text-[7px] md:text-[10px] text-gray-400 mt-1">
+                                <span>0次</span>
+                                <span>15次</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input 1-2: Peak Hours -->
+                    <div class="bg-tph-bg p-2.5 md:p-5 rounded-2xl border border-tph-border shadow-sm flex flex-col justify-between">
+                        <div class="h-14 md:h-12 flex flex-col justify-center">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                <label for="input-peak-1" class="font-medium text-[9px] md:text-sm text-tph-muted">每次 Peak 時數</label>
+                                <span id="display-peak-1" class="font-serif font-bold text-xs md:text-lg text-tph-red">1 小時</span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <input type="range" id="input-peak-1" min="0" max="6" step="1" value="1" oninput="calculateCost()" class="w-full h-1.5 rounded-lg appearance-none cursor-pointer custom-slider">
+                            <div class="flex justify-between text-[7px] md:text-[10px] text-gray-400 mt-1">
+                                <span>0h</span>
+                                <span>6h</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input 1-3: Non-Peak Hours -->
+                    <div class="bg-tph-bg p-2.5 md:p-5 rounded-2xl border border-tph-border shadow-sm flex flex-col justify-between">
+                        <div class="h-14 md:h-12 flex flex-col justify-center">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                <label for="input-nonpeak-1" class="font-medium text-[9px] md:text-sm text-tph-muted">每次 Non-Peak</label>
+                                <span id="display-nonpeak-1" class="font-serif font-bold text-xs md:text-lg text-tph-red">1 小時</span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <input type="range" id="input-nonpeak-1" min="0" max="6" step="1" value="1" oninput="calculateCost()" class="w-full h-1.5 rounded-lg appearance-none cursor-pointer custom-slider">
+                            <div class="flex justify-between text-[7px] md:text-[10px] text-gray-400 mt-1">
+                                <span>0h</span>
+                                <span>6h</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input 1-4: Guests -->
+                    <div class="bg-tph-bg p-2.5 md:p-5 rounded-2xl border border-tph-border shadow-sm flex flex-col justify-between">
+                        <div class="h-14 md:h-12 flex flex-col justify-center">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                <label for="input-guests-1" class="font-medium text-[9px] md:text-sm text-tph-muted">人數 (不含會員)</label>
+                                <span id="display-guests-1" class="font-serif font-bold text-xs md:text-lg text-tph-red">3 人</span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <input type="range" id="input-guests-1" min="0" max="11" value="3" oninput="calculateCost()" class="w-full h-1.5 rounded-lg appearance-none cursor-pointer custom-slider">
+                            <div class="flex justify-between text-[7px] md:text-[10px] text-gray-400 mt-1">
+                                <span>0人</span>
+                                <span>11人</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCENARIO 2 -->
+            <div class="border-t border-tph-border pt-6 mb-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="w-2 h-2 rounded-full bg-tph-gold"></span>
+                    <h4 class="font-serif text-[11px] md:text-sm font-bold tracking-wider text-tph-text uppercase">打球場景二 (Scenario 2)</h4>
+                </div>
+                <div class="grid grid-cols-4 gap-2 md:gap-6">
+                    <!-- Input 2-1: Frequency -->
+                    <div class="bg-tph-bg p-2.5 md:p-5 rounded-2xl border border-tph-border shadow-sm flex flex-col justify-between">
+                        <div class="h-14 md:h-12 flex flex-col justify-center">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                <label for="input-bookings-2" class="font-medium text-[9px] md:text-sm text-tph-muted">每月打波次數</label>
+                                <span id="display-bookings-2" class="font-serif font-bold text-xs md:text-lg text-tph-gold">0 次</span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <input type="range" id="input-bookings-2" min="0" max="15" value="0" oninput="calculateCost()" class="w-full h-1.5 rounded-lg appearance-none cursor-pointer custom-slider">
+                            <div class="flex justify-between text-[7px] md:text-[10px] text-gray-400 mt-1">
+                                <span>0次</span>
+                                <span>15次</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input 2-2: Peak Hours -->
+                    <div class="bg-tph-bg p-2.5 md:p-5 rounded-2xl border border-tph-border shadow-sm flex flex-col justify-between">
+                        <div class="h-14 md:h-12 flex flex-col justify-center">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                <label for="input-peak-2" class="font-medium text-[9px] md:text-sm text-tph-muted">每次 Peak 時數</label>
+                                <span id="display-peak-2" class="font-serif font-bold text-xs md:text-lg text-tph-gold">1 小時</span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <input type="range" id="input-peak-2" min="0" max="6" step="1" value="1" oninput="calculateCost()" class="w-full h-1.5 rounded-lg appearance-none cursor-pointer custom-slider">
+                            <div class="flex justify-between text-[7px] md:text-[10px] text-gray-400 mt-1">
+                                <span>0h</span>
+                                <span>6h</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input 2-3: Non-Peak Hours -->
+                    <div class="bg-tph-bg p-2.5 md:p-5 rounded-2xl border border-tph-border shadow-sm flex flex-col justify-between">
+                        <div class="h-14 md:h-12 flex flex-col justify-center">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                <label for="input-nonpeak-2" class="font-medium text-[9px] md:text-sm text-tph-muted">每次 Non-Peak</label>
+                                <span id="display-nonpeak-2" class="font-serif font-bold text-xs md:text-lg text-tph-gold">1 小時</span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <input type="range" id="input-nonpeak-2" min="0" max="6" step="1" value="1" oninput="calculateCost()" class="w-full h-1.5 rounded-lg appearance-none cursor-pointer custom-slider">
+                            <div class="flex justify-between text-[7px] md:text-[10px] text-gray-400 mt-1">
+                                <span>0h</span>
+                                <span>6h</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input 2-4: Guests -->
+                    <div class="bg-tph-bg p-2.5 md:p-5 rounded-2xl border border-tph-border shadow-sm flex flex-col justify-between">
+                        <div class="h-14 md:h-12 flex flex-col justify-center">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                                <label for="input-guests-2" class="font-medium text-[9px] md:text-sm text-tph-muted">人數 (不含會員)</label>
+                                <span id="display-guests-2" class="font-serif font-bold text-xs md:text-lg text-tph-gold">3 人</span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <input type="range" id="input-guests-2" min="0" max="11" value="3" oninput="calculateCost()" class="w-full h-1.5 rounded-lg appearance-none cursor-pointer custom-slider">
+                            <div class="flex justify-between text-[7px] md:text-[10px] text-gray-400 mt-1">
+                                <span>0人</span>
+                                <span>11人</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 text-xs md:text-sm flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
+                <div class="flex flex-wrap items-center gap-2 text-center sm:text-left text-tph-muted">
+                    <span class="font-medium text-tph-text">合併每月總時數:</span>
+                    <span id="stat-total-hours" class="font-bold text-tph-red">4 小時</span>
+                    <span class="text-gray-300">|</span>
+                    <span>Peak 共: <span id="stat-peak-hours" class="font-bold text-tph-text">2</span>h</span>
+                    <span class="text-gray-300">|</span>
+                    <span>Non-Peak 共: <span id="stat-nonpeak-hours" class="font-bold text-tph-text">2</span>h</span>
+                </div>
+                <div class="bg-white px-4 py-1.5 rounded-full border border-gray-200 shadow-sm text-[11px] md:text-sm text-tph-muted">
+                    <span>加權平均嘉賓: <span id="stat-guests" class="font-bold text-tph-gold">3</span> 人</span>
+                    <span class="text-gray-300 mx-1.5">|</span>
+                    <span>整隊均值 <span id="stat-total-players" class="font-bold text-tph-red">4</span> 人分攤</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULTS COMPARISON (Styled like the menu table) -->
+        <div class="grid grid-cols-3 gap-2 md:gap-6 items-stretch mb-8 pt-4">
+            
+            <!-- RED TIER CARD -->
+            <div id="card-red" class="relative overflow-visible bg-tph-card border border-tph-border rounded-2xl flex flex-col shadow-sm transition-all duration-300">
+                <!-- Color Block Header -->
+                <div class="bg-tph-red text-white text-center py-3.5 md:py-4 rounded-t-2xl font-serif font-bold tracking-widest text-sm md:text-lg">
+                    RED
+                </div>
+                
+                <div class="px-2.5 md:px-5 py-3 flex-1 flex flex-col text-tph-text text-[10px] md:text-sm relative">
+                    <span id="red-warning-badge" class="absolute top-1 right-2 bg-red-100 text-red-600 border border-red-200 text-[8px] md:text-[10px] font-bold px-1.5 py-0.5 rounded hidden">含自費</span>
+                    
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center">
+                        <span class="text-tph-muted">月費</span>
+                        <span class="font-bold text-right leading-tight">FREE<br><span class="text-[8px] md:text-[10px] font-normal text-gray-500">(Peak $800 | NP $600)</span></span>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center">
+                        <span class="text-tph-muted">場地費</span>
+                        <span id="red-breakdown-court" class="font-bold">$2,800</span>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center text-tph-red">
+                        <span>外加嘉賓費</span>
+                        <span id="red-breakdown-guest-cost" class="font-bold">+$0</span>
+                    </div>
+
+                    <!-- Total Cost Highlight -->
+                    <div class="border-b border-gray-200 py-3.5 flex justify-between items-center bg-gray-50 -mx-2.5 md:-mx-5 px-2.5 md:px-5">
+                        <span class="font-bold text-tph-text">整隊每月總支出</span>
+                        <span id="red-total" class="font-serif font-bold text-base md:text-2xl text-tph-red">$2,800</span>
+                    </div>
+
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center">
+                        <span class="text-tph-muted">人均/月</span>
+                        <span id="red-per-person" class="font-bold">$700</span>
+                    </div>
+
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center">
+                        <span class="text-tph-muted">每人/小時</span>
+                        <span id="red-per-hour" class="font-bold">$175/hr</span>
+                    </div>
+
+                    <div class="border-b border-gray-200 py-2.5 flex flex-col gap-1 text-[9px] md:text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="text-tph-muted">免費額度</span>
+                            <span class="font-bold">3人</span>
+                        </div>
+                        <div class="flex justify-between items-center text-gray-500">
+                            <span>額外嘉賓</span>
+                            <span>$100/hr (第4人起)</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 pb-2 text-center mt-auto">
+                        <span class="text-[9px] md:text-sm font-bold text-tph-red">3 天預約權 (限2h)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GOLD TIER CARD -->
+            <div id="card-gold" class="relative overflow-visible bg-tph-card border border-tph-border rounded-2xl flex flex-col shadow-sm transition-all duration-300">
+                <!-- Color Block Header -->
+                <div class="bg-tph-gold text-white text-center py-3.5 md:py-4 rounded-t-2xl font-serif font-bold tracking-widest text-sm md:text-lg">
+                    GOLD
+                </div>
+                
+                <div class="px-2.5 md:px-5 py-3 flex-1 flex flex-col text-tph-text text-[10px] md:text-sm relative">
+                    <span id="gold-warning-badge" class="absolute top-1 right-2 bg-red-100 text-red-600 border border-red-200 text-[8px] md:text-[10px] font-bold px-1.5 py-0.5 rounded hidden">含自費</span>
+                    
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center">
+                        <span class="text-tph-muted">月費</span>
+                        <span class="font-bold text-right leading-tight">$300<br><span class="text-[8px] md:text-[10px] font-normal text-gray-500">(P $560 | NP $420)</span></span>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center">
+                        <span class="text-tph-muted">折扣場租</span>
+                        <span id="gold-breakdown-base" class="font-bold">$2,260</span>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center text-tph-red">
+                        <span>外加嘉賓費</span>
+                        <span id="gold-breakdown-guest-cost" class="font-bold">+$0</span>
+                    </div>
+
+                    <!-- Total Cost Highlight -->
+                    <div class="border-b border-gray-200 py-3.5 flex justify-between items-center bg-gray-50 -mx-2.5 md:-mx-5 px-2.5 md:px-5">
+                        <span class="font-bold text-tph-text">整隊每月總支出</span>
+                        <span id="gold-total" class="font-serif font-bold text-base md:text-2xl text-tph-gold">$2,260</span>
+                    </div>
+
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center">
+                        <span class="text-tph-muted">人均/月</span>
+                        <span id="gold-per-person" class="font-bold">$565</span>
+                    </div>
+
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center">
+                        <span class="text-tph-muted">每人/小時</span>
+                        <span id="gold-per-hour" class="font-bold">$141.3/hr</span>
+                    </div>
+
+                    <div class="border-b border-gray-200 py-2.5 flex flex-col gap-1 text-[9px] md:text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="text-tph-muted">免費額度</span>
+                            <span class="font-bold">5人</span>
+                        </div>
+                        <div class="flex justify-between items-center text-gray-500">
+                            <span>額外嘉賓</span>
+                            <span>$100/hr (第6人起)</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 pb-2 text-center mt-auto">
+                        <span class="text-[9px] md:text-sm font-bold text-tph-gold">7 天預約權 (限2h)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLACK TIER CARD -->
+            <div id="card-black" class="relative overflow-visible bg-tph-card border border-tph-border rounded-2xl flex flex-col shadow-sm transition-all duration-300">
+                
+                <!-- Highlight Badge Overhanging -->
+                <div id="black-savings-badge" class="absolute -top-3 left-1/2 -translate-x-1/2 bg-tph-gold text-white text-[9px] md:text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-md whitespace-nowrap z-20">
+                    首選 👑
+                </div>
+                
+                <!-- Color Block Header -->
+                <div class="bg-tph-black text-white text-center py-3.5 md:py-4 rounded-t-2xl font-serif font-bold tracking-widest text-sm md:text-lg">
+                    BLACK
+                </div>
+                
+                <div class="px-2.5 md:px-5 py-3 flex-1 flex flex-col text-tph-text text-[10px] md:text-sm relative">
+                    <span id="black-warning-badge" class="absolute top-1 right-2 bg-red-100 text-red-600 border border-red-200 text-[8px] md:text-[10px] font-bold px-1.5 py-0.5 rounded hidden">含自費</span>
+                    
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center">
+                        <span class="text-tph-muted">月費</span>
+                        <span class="font-bold text-right leading-tight">$2,000<br><span class="text-[8px] md:text-[10px] font-normal text-gray-500">(含 2P + 2NP)</span></span>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 py-2.5 flex flex-col gap-0.5">
+                        <div class="flex justify-between items-center">
+                            <span class="text-tph-muted">實付 Peak (<span id="black-breakdown-peak-qty">0</span>h)</span>
+                            <span id="black-breakdown-peak-cost" class="font-bold">$0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-tph-muted">實付 Non-P (<span id="black-breakdown-nonpeak-qty">0</span>h)</span>
+                            <span id="black-breakdown-nonpeak-cost" class="font-bold">$0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center text-tph-red">
+                        <span>外加嘉賓費</span>
+                        <span id="black-breakdown-guest-cost" class="font-bold">+$0</span>
+                    </div>
+
+                    <!-- Total Cost Highlight -->
+                    <div class="border-b border-gray-200 py-3.5 flex justify-between items-center bg-gray-50 -mx-2.5 md:-mx-5 px-2.5 md:px-5">
+                        <span class="font-bold text-tph-text">整隊每月總支出</span>
+                        <span id="black-total" class="font-serif font-bold text-base md:text-2xl text-tph-black">$2,000</span>
+                    </div>
+
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center">
+                        <span class="text-tph-muted">人均/月</span>
+                        <span id="black-per-person" class="font-bold">$500</span>
+                    </div>
+
+                    <div class="border-b border-gray-200 py-2.5 flex justify-between items-center">
+                        <span class="text-tph-muted">每人/小時</span>
+                        <span id="black-per-hour" class="font-bold text-tph-gold">$125/hr</span>
+                    </div>
+
+                    <div class="border-b border-gray-200 py-2.5 flex flex-col gap-1 text-[9px] md:text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="text-tph-muted">免費額度</span>
+                            <span class="font-bold">7人</span>
+                        </div>
+                        <div class="flex justify-between items-center text-gray-500">
+                            <span>額外嘉賓</span>
+                            <span>$50/hr (第8人起)</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 pb-2 text-center mt-auto">
+                        <span class="text-[9px] md:text-sm font-bold text-tph-black">14 天預約權 (限4h)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Savings Highlights Banner -->
+        <div class="max-w-4xl mx-auto mb-14">
+            <p id="black-savings-text" class="text-center font-sans text-sm md:text-base text-tph-red tracking-wide bg-red-50 py-3.5 px-4 rounded-xl border border-red-100 font-medium">
+                選擇 BLACK 會籍，每人每小時省下 $50，整隊每月共省下 $800 港幣！
+            </p>
+        </div>
+
+        <!-- Extra Benefits Section -->
+        <section class="mt-8 bg-white border border-tph-border p-8 rounded-3xl max-w-4xl mx-auto shadow-sm">
+            <h3 class="font-serif text-2xl text-center text-tph-red mb-8 tracking-wider">BLACK 頂級會員獨享特權</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex gap-4 items-start">
+                    <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-tph-gold shrink-0 border border-gray-200">
+                        <i class="fa-solid fa-lock-open text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-tph-text mb-1">無綁約承諾 (No Lock-In)</h4>
+                        <p class="text-sm text-tph-muted leading-relaxed">按月續訂。下個月要商務旅行或出國？隨時暫停或退訂，完全零壓力。</p>
+                    </div>
+                </div>
+                <div class="flex gap-4 items-start">
+                    <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-tph-gold shrink-0 border border-gray-200">
+                        <i class="fa-solid fa-wallet text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-tph-text mb-1">不鎖定儲值 (No Credit System)</h4>
+                        <p class="text-sm text-tph-muted leading-relaxed">我們從不扣留你的大額資金。透明、簡單的按次/按月支付，把控權留給你和朋友。</p>
+                    </div>
+                </div>
+                <div class="flex gap-4 items-start">
+                    <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-tph-gold shrink-0 border border-gray-200">
+                        <i class="fa-solid fa-users text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-tph-text mb-1">最強社交特權 (Guest-Friendly)</h4>
+                        <p class="text-sm text-tph-muted leading-relaxed">輕鬆攜帶多達 8 位球員進場（含自己）。把 The Pickle House 變成你款待朋友與客戶的專屬主場。</p>
+                    </div>
+                </div>
+                <div class="flex gap-4 items-start">
+                    <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-tph-gold shrink-0 border border-gray-200">
+                        <i class="fa-solid fa-hourglass-half text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-tph-text mb-1">不設每日遊玩時限</h4>
+                        <p class="text-sm text-tph-muted leading-relaxed">不限每日預約時數。只要你的體力足夠、預約成功，最高可單次預約 4 小時。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INSERTED MENU SECTION -->
+        <section class="max-w-4xl mx-auto mt-16 pt-8 border-t border-tph-border">
+            <h3 class="font-serif text-2xl text-center text-tph-red mb-8 tracking-wider">Lounge Menu</h3>
+            <img src="http://abc16343.sg-host.com/image/menu.jpg" alt="TPH Menu" class="w-full rounded-2xl shadow-lg border border-gray-200">
+        </section>
+
+    </main>
+
+    <!-- FLOATING WHATSAPP CS CONTACT CONTACT BUTTON -->
+    <a href="https://wa.me/85254647443" target="_blank" id="whatsapp-floating-dock" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 z-50 bg-[#25D366] text-white p-3.5 rounded-2xl shadow-xl flex items-center justify-center gap-3 font-medium text-sm transition-all duration-300 hover:bg-[#20ba5a] hover:scale-105 max-w-md md:max-w-xs border border-green-500">
+        <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-xl">
+            <i class="fa-brands fa-whatsapp"></i>
+        </div>
+        <div class="flex-1 text-left">
+            <p class="text-[10px] text-white/90 uppercase tracking-widest leading-none font-bold">聯絡 TPH 專屬顧問</p>
+            <p class="font-serif font-bold text-xs mt-0.5 tracking-wide">WhatsApp 會籍極速辦理</p>
+        </div>
+        <div class="text-xs bg-black/10 px-2.5 py-1 rounded-md font-semibold">
+            立即諮詢 <i class="fa-solid fa-chevron-right ml-0.5 text-[10px]"></i>
+        </div>
+    </a>
+
+    <footer class="border-t border-tph-border py-12 text-center text-xs text-tph-muted mt-16 bg-white">
+        <div class="max-w-6xl mx-auto px-4 space-y-2">
+            <p>© 2026 The Pickle House. All Rights Reserved.</p>
+            <p class="tracking-widest uppercase">Wong Chuk Hang, Hong Kong</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Calculation Engine -->
+    <script nonce="tph-calc-inline-js">
+        function calculateCost() {
+            // Get Scenario 1 values
+            const bookings1 = parseInt(document.getElementById('input-bookings-1').value);
+            const peak1 = parseFloat(document.getElementById('input-peak-1').value);
+            const nonpeak1 = parseFloat(document.getElementById('input-nonpeak-1').value);
+            const guests1 = parseInt(document.getElementById('input-guests-1').value);
+            const players1 = guests1 + 1;
+            const totalHours1 = bookings1 * (peak1 + nonpeak1);
+
+            // Get Scenario 2 values
+            const bookings2 = parseInt(document.getElementById('input-bookings-2').value);
+            const peak2 = parseFloat(document.getElementById('input-peak-2').value);
+            const nonpeak2 = parseFloat(document.getElementById('input-nonpeak-2').value);
+            const guests2 = parseInt(document.getElementById('input-guests-2').value);
+            const players2 = guests2 + 1;
+            const totalHours2 = bookings2 * (peak2 + nonpeak2);
+
+            // Update UI displays for inputs
+            document.getElementById('display-bookings-1').textContent = bookings1 + " 次";
+            document.getElementById('display-peak-1').textContent = peak1 + " 小時";
+            document.getElementById('display-nonpeak-1').textContent = nonpeak1 + " 小時";
+            document.getElementById('display-guests-1').textContent = guests1 + " 人";
+
+            document.getElementById('display-bookings-2').textContent = bookings2 + " 次";
+            document.getElementById('display-peak-2').textContent = peak2 + " 小時";
+            document.getElementById('display-nonpeak-2').textContent = nonpeak2 + " 小時";
+            document.getElementById('display-guests-2').textContent = guests2 + " 人";
+
+            // Combined aggregation logic
+            const totalBookings = bookings1 + bookings2;
+            const totalMonthlyPeakHours = (bookings1 * peak1) + (bookings2 * peak2);
+            const totalMonthlyNonpeakHours = (bookings1 * nonpeak1) + (bookings2 * nonpeak2);
+            const totalCombinedHours = totalMonthlyPeakHours + totalMonthlyNonpeakHours;
+
+            // Weighted Average Players
+            const playersCombined = totalCombinedHours > 0 
+                ? ((players1 * totalHours1 + players2 * totalHours2) / totalCombinedHours) 
+                : 1;
+
+            // Render top bar metrics
+            document.getElementById('stat-total-hours').textContent = totalCombinedHours + " 小時";
+            document.getElementById('stat-peak-hours').textContent = totalMonthlyPeakHours;
+            document.getElementById('stat-nonpeak-hours').textContent = totalMonthlyNonpeakHours;
+            document.getElementById('stat-guests').textContent = Math.round(playersCombined - 1);
+            document.getElementById('stat-total-players').textContent = Math.round(playersCombined);
+
+            // --- 1. RED MEMBER COST FORMULA ---
+            const redPeakCost = totalMonthlyPeakHours * 800;
+            const redNonpeakCost = totalMonthlyNonpeakHours * 600;
+            const waiverRed = 3;
+            const addRed1 = Math.max(0, guests1 - waiverRed);
+            const addRed2 = Math.max(0, guests2 - waiverRed);
+            // $100 per hour per additional guest per booking
+            const redGuestFee = (addRed1 * 100 * (peak1 + nonpeak1) * bookings1) + 
+                                (addRed2 * 100 * (peak2 + nonpeak2) * bookings2);
+
+            const redTotalCost = redPeakCost + redNonpeakCost + redGuestFee;
+            const redPerPerson = redTotalCost / playersCombined;
+            const redPerHour = totalCombinedHours > 0 ? (redTotalCost / playersCombined / totalCombinedHours) : 0;
+
+            document.getElementById('red-breakdown-court').textContent = "$" + (redPeakCost + redNonpeakCost).toLocaleString();
+            document.getElementById('red-breakdown-guest-cost').textContent = "+$" + redGuestFee.toLocaleString();
+            
+            const redWarningBadge = document.getElementById('red-warning-badge');
+            redWarningBadge.style.display = (guests1 > waiverRed || guests2 > waiverRed) ? 'block' : 'none';
+
+
+            // --- 2. GOLD MEMBER COST FORMULA (No Complimentary Hours, rates P:$560/NP:$420) ---
+            const goldFee = 300;
+            const goldPeakCost = totalMonthlyPeakHours * 560;
+            const goldNonpeakCost = totalMonthlyNonpeakHours * 420;
+            
+            // Gold Waiver Limit is 5 Guests, guest fee $100 per hour per additional guest
+            const waiverGold = 5;
+            const addGold1 = Math.max(0, guests1 - waiverGold);
+            const addGold2 = Math.max(0, guests2 - waiverGold);
+            const goldGuestFee = (addGold1 * 100 * (peak1 + nonpeak1) * bookings1) + 
+                                 (addGold2 * 100 * (peak2 + nonpeak2) * bookings2);
+
+            const goldTotalCost = goldFee + goldPeakCost + goldNonpeakCost + goldGuestFee;
+            const goldPerPerson = goldTotalCost / playersCombined;
+            const goldPerHour = totalCombinedHours > 0 ? (goldTotalCost / playersCombined / totalCombinedHours) : 0;
+
+            document.getElementById('gold-breakdown-base').textContent = "$" + (goldFee + goldPeakCost + goldNonpeakCost).toLocaleString();
+            document.getElementById('gold-breakdown-guest-cost').textContent = "+$" + goldGuestFee.toLocaleString();
+            
+            const goldWarningBadge = document.getElementById('gold-warning-badge');
+            goldWarningBadge.style.display = (guests1 > waiverGold || guests2 > waiverGold) ? 'block' : 'none';
+
+
+            // --- 3. BLACK MEMBER COST FORMULA (Includes 2P + 2NP free hours) ---
+            const blackFee = 2000;
+            // 2 free Peak and 2 free Non-Peak hours subtracted from monthly aggregate totals
+            const paidBlackPeakHours = Math.max(0, totalMonthlyPeakHours - 2);
+            const blackPeakCost = paidBlackPeakHours * 520;
+            const paidBlackNonpeakHours = Math.max(0, totalMonthlyNonpeakHours - 2);
+            const blackNonpeakCost = paidBlackNonpeakHours * 390;
+
+            // Black Waiver Limit is 7 Guests, extra guest fee is reduced to $50 per hour per additional guest
+            const waiverBlack = 7;
+            const addBlack1 = Math.max(0, guests1 - waiverBlack);
+            const addBlack2 = Math.max(0, guests2 - waiverBlack);
+            const blackGuestFee = (addBlack1 * 50 * (peak1 + nonpeak1) * bookings1) + 
+                                  (addBlack2 * 50 * (peak2 + nonpeak2) * bookings2);
+
+            const blackTotalCost = blackFee + blackPeakCost + blackNonpeakCost + blackGuestFee;
+            const blackPerPerson = blackTotalCost / playersCombined;
+            const blackPerHour = totalCombinedHours > 0 ? (blackTotalCost / playersCombined / totalCombinedHours) : 0;
+
+            document.getElementById('black-breakdown-guest-cost').textContent = "+$" + blackGuestFee.toLocaleString();
+            document.getElementById('black-breakdown-peak-qty').textContent = paidBlackPeakHours;
+            document.getElementById('black-breakdown-peak-cost').textContent = "$" + blackPeakCost.toLocaleString();
+            document.getElementById('black-breakdown-nonpeak-qty').textContent = paidBlackNonpeakHours;
+            document.getElementById('black-breakdown-nonpeak-cost').textContent = "$" + blackNonpeakCost.toLocaleString();
+            
+            const blackWarningBadge = document.getElementById('black-warning-badge');
+            blackWarningBadge.style.display = (guests1 > waiverBlack || guests2 > waiverBlack) ? 'block' : 'none';
+
+
+            // Push cost aggregates to front cards
+            document.getElementById('red-total').textContent = "$" + redTotalCost.toLocaleString();
+            document.getElementById('red-per-person').textContent = "$" + Math.round(redPerPerson).toLocaleString();
+            document.getElementById('red-per-hour').textContent = "$" + redPerHour.toFixed(1) + "/hr";
+
+            document.getElementById('gold-total').textContent = "$" + goldTotalCost.toLocaleString();
+            document.getElementById('gold-per-person').textContent = "$" + Math.round(goldPerPerson).toLocaleString();
+            document.getElementById('gold-per-hour').textContent = "$" + goldPerHour.toFixed(1) + "/hr";
+
+            document.getElementById('black-total').textContent = "$" + blackTotalCost.toLocaleString();
+            document.getElementById('black-per-person').textContent = "$" + Math.round(blackPerPerson).toLocaleString();
+            document.getElementById('black-per-hour').textContent = "$" + blackPerHour.toFixed(1) + "/hr";
+
+            // Trigger highlights
+            highlightBestCard(redTotalCost, goldTotalCost, blackTotalCost, redPerHour, goldPerHour, blackPerHour);
+        }
+
+        function highlightBestCard(redTotal, goldTotal, blackTotal, redHr, goldHr, blackHr) {
+            const cardRed = document.getElementById('card-red');
+            const cardGold = document.getElementById('card-gold');
+            const cardBlack = document.getElementById('card-black');
+            const badge = document.getElementById('black-savings-badge');
+            const savingsText = document.getElementById('black-savings-text');
+
+            // Reset base classes for table look
+            const baseClass = "relative overflow-visible bg-tph-card border border-tph-border rounded-2xl flex flex-col shadow-sm transition-all duration-300";
+            cardRed.className = baseClass;
+            cardGold.className = baseClass;
+            cardBlack.className = baseClass;
+            badge.style.display = 'none';
+            savingsText.style.display = 'none';
+
+            const minTotal = Math.min(redTotal, goldTotal, blackTotal);
+
+            if (minTotal === blackTotal) {
+                cardBlack.className = "relative overflow-visible bg-tph-card border-2 border-tph-gold rounded-2xl flex flex-col shadow-xl transition-all duration-300 transform md:-translate-y-2 z-10";
+                badge.style.display = 'block';
+                
+                const savings = redTotal - blackTotal;
+                const perHourSavings = redHr - blackHr;
+                if (savings > 0) {
+                    savingsText.style.display = 'block';
+                    savingsText.textContent = `選擇 BLACK 會籍，每人每小時省下 $${perHourSavings.toFixed(1)}，整隊每月共省下 $${savings.toLocaleString()} 港幣！`;
+                }
+            } else if (minTotal === goldTotal) {
+                cardGold.className = "relative overflow-visible bg-tph-card border-2 border-tph-gold rounded-2xl flex flex-col shadow-xl transition-all duration-300 transform md:-translate-y-2 z-10";
+            } else {
+                cardRed.className = "relative overflow-visible bg-tph-card border-2 border-tph-red rounded-2xl flex flex-col shadow-xl transition-all duration-300 transform md:-translate-y-2 z-10";
+            }
+        }
+
+        function applyPreset(bookings1, peak1, nonpeak1, guests1, bookings2 = 0, peak2 = 0, nonpeak2 = 0, guests2 = 0) {
+            document.getElementById('input-bookings-1').value = bookings1;
+            document.getElementById('input-peak-1').value = peak1;
+            document.getElementById('input-nonpeak-1').value = nonpeak1;
+            document.getElementById('input-guests-1').value = guests1;
+
+            document.getElementById('input-bookings-2').value = bookings2;
+            document.getElementById('input-peak-2').value = peak2;
+            document.getElementById('input-nonpeak-2').value = nonpeak2;
+            document.getElementById('input-guests-2').value = guests2;
+
+            calculateCost();
+            document.getElementById('card-red').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function scrollToCalculator() {
+            document.getElementById('calculator-inputs').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        window.onload = function() {
+            calculateCost();
+        };
+    </script>
+</body>
+</html>
